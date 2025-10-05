@@ -45,6 +45,8 @@ develop = [
     "twine",
     "uv",
     "wheel",
+    # Tests
+    "s3fs",
 ]
 
 [project.scripts]
