@@ -1,0 +1,124 @@
+[build-system]
+requires = ["hatchling"]
+build-backend="hatchling.build"
+
+[project]
+name = "fsspec-python"
+authors = [{name = "the fsspec-python authors", email = "t.paine154@gmail.com"}]
+description = "Native python integration for fsspec backends"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+version = "0.1.0"
+requires-python = ">=3.9"
+keywords = []
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+dependencies = [
+    "fsspec",
+]
+
+[project.optional-dependencies]
+develop = [
+    "build",
+    "bump-my-version",
+    "check-manifest",
+    "codespell>=2.4,<2.5",
+    "hatchling",
+    "mdformat>=0.7.22,<0.8",
+    "mdformat-tables>=1",
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "twine",
+    "uv",
+    "wheel",
+]
+
+[project.scripts]
+
+[project.urls]
+Repository = "https://github.com/1kbgz/fsspec-python"
+Homepage = "https://github.com/1kbgz/fsspec-python"
+
+[tool.bumpversion]
+current_version = "0.1.0"
+commit = true
+tag = true
+commit_args = "-s"
+
+[[tool.bumpversion.files]]
+filename = "fsspec_python/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
+
+[tool.check-manifest]
+ignore = [
+    ".copier-answers.yaml",
+    "Makefile",
+    "docs/**/*",
+]
+
+[tool.coverage.run]
+branch = true
+omit = [
+    "fsspec_python/tests/integration/",
+]
+[tool.coverage.report]
+exclude_also = [
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "@(abc\\.)?abstractmethod",
+]
+ignore_errors = true
+fail_under = 50
+
+[tool.hatch.build]
+artifacts = []
+
+[tool.hatch.build.sources]
+src = "/"
+
+[tool.hatch.build.targets.sdist]
+packages = ["fsspec_python"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["fsspec_python"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+
+[tool.pytest.ini_options]
+addopts = ["-vvv", "--junitxml=junit.xml"]
+testpaths = "fsspec_python/tests"
+
+[tool.ruff]
+line-length = 150
+
+[tool.ruff.lint]
+extend-select = ["I"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+default-section = "third-party"
+known-first-party = ["fsspec_python"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401", "F403"]
