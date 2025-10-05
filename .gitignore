@@ -157,3 +157,6 @@ fsspec_python/labextension
 
 # Rust
 target
+
+# Tests
+fsspec_python/tests/dump/out.txt

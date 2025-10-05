@@ -20,3 +20,12 @@ def local_importer():
     install_importer(f"file://{Path(__file__).parent}/local")
     yield
     uninstall_importer()
+
+
+@pytest.fixture()
+def open_hook():
+    from fsspec_python import install_open_hook, uninstall_open_hook
+
+    install_open_hook(f"file://{Path(__file__).parent}/dump/")
+    yield
+    uninstall_open_hook()
