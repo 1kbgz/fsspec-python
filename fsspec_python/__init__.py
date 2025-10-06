@@ -1,3 +1,4 @@
+from .fs import *
 from .importer import *
 from .open import *
 

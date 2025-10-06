@@ -30,6 +30,9 @@ dependencies = [
     "fsspec",
 ]
 
+[project.entry-points."fsspec.specs"]
+python = "fsspec_python.fs.PythonFileSystem"
+
 [project.optional-dependencies]
 develop = [
     "build",
