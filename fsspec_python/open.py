@@ -18,12 +18,8 @@ def install_open_hook(fsspec: str, **fsspec_args):
     root: str
     fsspec_fs, root = url_to_fs(fsspec, **fsspec_args)
 
-    print(root)
-
     def open_from_fsspec(file, mode="r", buffering=-1, encoding=None, errors=None, newline=None, closefd=True, opener=None):
         filename = join(root, file)
-        print(filename)
-
         if ("w" in mode or "a" in mode or "x" in mode) or fsspec_fs.exists(filename):
             return fsspec_fs.open(filename, mode=mode, encoding=encoding, errors=errors, newline=newline)
         return _original_open(file, mode, buffering, encoding, errors, newline, closefd, opener)
