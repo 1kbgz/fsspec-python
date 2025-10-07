@@ -26,10 +26,13 @@ class FSSpecImportFinder(MetaPathFinder):
     def __init__(self, fsspec: str, **fsspec_args: str) -> None:
         self.fsspec_fs: AbstractFileSystem
         self.root: str
+        self.registered_name: str
         if isinstance(fsspec, AbstractFileSystem):
             self.fsspec_fs = fsspec
             self.root = fsspec_args.get("fo", fsspec.root_marker)
+            self.registered_name = f"{fsspec.protocol if isinstance(fsspec.protocol, str) else fsspec.protocol[0]}://{self.root}"
         else:
+            self.registered_name = fsspec
             self.fsspec_fs, self.root = url_to_fs(fsspec, **fsspec_args)
         self.remote_modules: dict[str, str] = {}
 
@@ -83,7 +86,11 @@ def install_importer(fsspec: str, **fsspec_args: str) -> FSSpecImportFinder:
     """
     if isinstance(fsspec, AbstractFileSystem):
         # Reassemble fsspec and args
-        fsspec = f"{fsspec.protocol if isinstance(fsspec.protocol, str) else fsspec.protocol[0]}://{fsspec.root_marker}"
+        if "fo" in fsspec_args:
+            # if fo is given, use that as root
+            fsspec = f"{fsspec.protocol if isinstance(fsspec.protocol, str) else fsspec.protocol[0]}://{fsspec_args['fo']}"
+        else:
+            fsspec = f"{fsspec.protocol if isinstance(fsspec.protocol, str) else fsspec.protocol[0]}://{fsspec.root_marker}"
         fsspec_args = fsspec_args or {}
 
     global _finders
@@ -103,8 +110,10 @@ def uninstall_importer(fsspec: str = "") -> None:
             return
         fsspec = list(_finders.keys())[-1]
     if fsspec in _finders:
-        finder = _finders[fsspec]
-        del _finders[fsspec]
-        if finder in sys.meta_path:
+        finder = _finders.pop(fsspec, None)
+        if finder:
             finder.unload()
+        if finder in sys.meta_path:
             sys.meta_path.remove(finder)
+    else:
+        raise ValueError(f"No importer found for {fsspec}")
