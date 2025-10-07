@@ -25,16 +25,14 @@ class PythonFileSystem(AbstractFileSystem):
         if not (fs is None) ^ (target_protocol is None):
             raise ValueError("Both filesystems (fs) and target_protocol may not be both given.")
 
-        target_options = target_options or {}
-        self.target_protocol = (
-            target_protocol if isinstance(target_protocol, str) else (fs.protocol if isinstance(fs.protocol, str) else fs.protocol[0])
-        )
-        self.fs = fs if fs is not None else filesystem(target_protocol, **target_options)
-
-        if target_protocol and kwargs.get("fo"):
-            install_importer(f"{self.target_protocol}://{kwargs['fo']}", **target_options)
+        if target_protocol:
+            import pdb; pdb.set_trace()
+            self.fs = filesystem(target_protocol, target_options=target_options or {}, **kwargs)
         else:
-            install_importer(self.fs, **target_options, **kwargs)
+            self.fs = fs
+
+        import pdb; pdb.set_trace()
+        install_importer(self.fs, target_options=target_options, **kwargs)
 
     def close(self):
         uninstall_importer(self.target_protocol)

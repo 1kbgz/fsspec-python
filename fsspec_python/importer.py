@@ -7,7 +7,7 @@ from os.path import join
 from types import ModuleType
 from typing import TYPE_CHECKING, Dict
 
-from fsspec import url_to_fs
+from fsspec import filesystem, url_to_fs
 from fsspec.implementations.local import AbstractFileSystem
 
 if TYPE_CHECKING:

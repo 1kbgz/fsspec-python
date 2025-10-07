@@ -37,3 +37,9 @@ def fs_importer():
     fs = open(f"python::file://{Path(__file__).parent}/local2")
     yield fs
     fs.close()
+
+@pytest.fixture()
+def fs_union_importer():
+    fs = open(f"python::file://{Path(__file__).parent}/local3::python::file://{Path(__file__).parent}/local4")
+    yield fs
+    fs.close()
