@@ -27,7 +27,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "fsspec",
+    "fsspec@git+https://github.com/fsspec/filesystem_spec#egg=c23674c4c7bd60f8c3b41d0c4bbcefe4d18d6c70",
+
 ]
 
 [project.entry-points."fsspec.specs"]
@@ -84,7 +85,7 @@ ignore = [
 [tool.coverage.run]
 branch = true
 omit = [
-    "fsspec_python/tests/integration/",
+    "fsspec_python/tests/**/*",
 ]
 [tool.coverage.report]
 exclude_also = [
@@ -94,6 +95,10 @@ exclude_also = [
 ]
 ignore_errors = true
 fail_under = 50
+
+# TODO remove
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.hatch.build]
 artifacts = []
