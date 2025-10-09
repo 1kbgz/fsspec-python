@@ -2,14 +2,15 @@ from __future__ import annotations
 
 import inspect
 
-from fsspec import AbstractFileSystem, filesystem
+from fsspec import filesystem
+from fsspec.implementations.chained import ChainedFileSystem
 
 from .importer import install_importer, uninstall_importer
 
 __all__ = ("PythonFileSystem",)
 
 
-class PythonFileSystem(AbstractFileSystem):
+class PythonFileSystem(ChainedFileSystem):
     """Python import filesystem"""
 
     def __init__(self, target_protocol=None, target_options=None, fs=None, **kwargs):
@@ -29,62 +30,70 @@ class PythonFileSystem(AbstractFileSystem):
         self.target_protocol = (
             target_protocol if isinstance(target_protocol, str) else (fs.protocol if isinstance(fs.protocol, str) else fs.protocol[0])
         )
+
         self.fs = fs if fs is not None else filesystem(target_protocol, **target_options)
 
-        if target_protocol and kwargs.get("fo"):
-            install_importer(f"{self.target_protocol}://{kwargs['fo']}", **target_options)
+        if kwargs.get("fo"):
+            self.registered_name = f"{self.target_protocol}://{kwargs['fo']}"
+            kwargs = {**target_options}
         else:
-            install_importer(self.fs, **target_options, **kwargs)
+            self.registered_name = f"{self.target_protocol}://"
+            kwargs = {**target_options, **kwargs}
+        install_importer(self.registered_name, **kwargs)
 
-    def close(self):
-        uninstall_importer(self.target_protocol)
-        self.fs.close()
-        super().close()
+    def exit(self):
+        uninstall_importer(self.registered_name)
+        if hasattr(self, "fs") and self.fs is not None and hasattr(self.fs, "exit"):
+            self.fs.exit()
 
     def __getattribute__(self, item):
-        if item in {
-            "__init__",
-            "__getattribute__",
-            "__reduce__",
-            "_make_local_details",
-            "open",
-            "cat",
-            "cat_file",
-            "_cat_file",
-            "cat_ranges",
-            "_cat_ranges",
-            "get",
-            "read_block",
-            "tail",
-            "head",
-            "info",
-            "ls",
-            "exists",
-            "isfile",
-            "isdir",
-            "_check_file",
-            "_check_cache",
-            "_mkcache",
-            "clear_cache",
-            "clear_expired_cache",
-            "pop_from_cache",
-            "local_file",
-            "_paths_from_path",
-            "get_mapper",
-            "open_many",
-            "commit_many",
-            "hash_name",
-            "__hash__",
-            "__eq__",
-            "to_json",
-            "to_dict",
-            "cache_size",
-            "pipe_file",
-            "pipe",
-            "start_transaction",
-            "end_transaction",
+        if item not in {
+            "__new__",
+            "fs",
+            # "__init__",
+            # "__getattribute__",
+            # "__reduce__",
+            # "_make_local_details",
+            # "open",
+            # "cat",
+            # "cat_file",
+            # "_cat_file",
+            # "cat_ranges",
+            # "_cat_ranges",
+            # "get",
+            # "read_block",
+            # "tail",
+            # "head",
+            # "info",
+            # "ls",
+            # "exists",
+            # "isfile",
+            # "isdir",
+            # "_check_file",
+            # "_check_cache",
+            # "_mkcache",
+            # "clear_cache",
+            # "clear_expired_cache",
+            # "pop_from_cache",
+            # "local_file",
+            # "_paths_from_path",
+            # "get_mapper",
+            # "open_many",
+            # "commit_many",
+            # "hash_name",
+            # "__hash__",
+            # "__eq__",
+            # "to_json",
+            # "to_dict",
+            # "cache_size",
+            # "pipe_file",
+            # "pipe",
+            # "start_transaction",
+            # "end_transaction",
         }:
             return object.__getattribute__(self, item)
+
+        # Otherwise pull it out of dict
         d = object.__getattribute__(self, "__dict__")
         fs = d.get("fs", None)  # fs is not immediately defined
         if item in d:

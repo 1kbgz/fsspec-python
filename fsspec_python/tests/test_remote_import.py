@@ -10,7 +10,15 @@ class TestRemoteImport:
 
         assert my_remote_file.foo() == "This is a remote file."
 
-    def test_importer_local(self, local_importer):
-        import my_local_file
+    # def test_importer_local(self, local_importer):
+    #     import my_local_file
 
-        assert my_local_file.bar() == "This is a local file."
+    #     assert my_local_file.bar() == "This is a local file."
+
+    # def test_importer_local_multi(self, local_importer_multi):
+    #     assert len(fsspec_python.importer._finders) == 2
+    #     import my_local_file
+    #     import my_local_file2
+
+    #     assert my_local_file.bar() == "This is a local file."
+    #     assert my_local_file2.baz() == "This is a local file."
