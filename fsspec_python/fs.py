@@ -22,6 +22,7 @@ class PythonFileSystem(ChainedFileSystem):
             fs: filesystem instance The target filesystem to run against. Provide this or ``protocol``.
         """
         super().__init__(**kwargs)
+
         if fs is None and target_protocol is None:
             raise ValueError("Please provide filesystem instance(fs) or target_protocol")
         if not (fs is None) ^ (target_protocol is None):
@@ -33,7 +34,11 @@ class PythonFileSystem(ChainedFileSystem):
         )
 
         self.fs = fs if fs is not None else filesystem(target_protocol, **target_options)
-        self.root = kwargs.get("fo", "") or "/"
+        if isinstance(self.fs, ChainedFileSystem):
+            self.root = "/"
+            kwargs.pop("fo", None)
+        else:
+            self.root = kwargs.get("fo", "") or "/"
 
         if install:
             from .importer import install_importer
@@ -56,8 +61,7 @@ class PythonFileSystem(ChainedFileSystem):
             "exit",
             "fs",
             "protocol",
-            "registered_name",
-            "target_protocol",
+            "root",
         }:
             return object.__getattribute__(self, item)
 
