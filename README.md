@@ -24,8 +24,8 @@ import my_bucket_lib  # s3://my-python-bucket/my_bucket_lib.py
 In addition to the `python::` [chained protocol](https://filesystem-spec.readthedocs.io/en/latest/features.html#url-chaining) url, this library exposes a handful of functions and monkey patches for connecting Python internal mechanisms to an `fsspec`-based filesystem.
 
 - install_importer: install an
-- `install_importer(fsspec: str, **fsspec_args: str)`: install an fsspec url/args as an importer
-- `uninstall_importer(fsspec: str = "")`: uninstall an fsspec url, or if nothing provided remove the last-installed one
+- `install_importer(fs: Union[str, AbstractFileSystem], **kwargs)`: install an fsspec url/args or filesystem instance as an importer
+- `uninstall_importer(fs: Union[str, AbstractFileSystem] = "")`: uninstall an fsspec url or filesystem instance, or if nothing provided remove the last-installed one
 - `install_open_hook(fsspec: str, **fsspec_args)`: monkeypatch Python's `open` builtin to run off an `fsspec` filesystem
 - `uninstall_open_hook()`: remove the monkeypatched `open`
 
