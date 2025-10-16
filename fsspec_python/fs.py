@@ -2,17 +2,19 @@ from __future__ import annotations
 
 import inspect
 
-from fsspec import AbstractFileSystem, filesystem
-
-from .importer import install_importer, uninstall_importer
+from fsspec import filesystem, register_implementation
+from fsspec.implementations.chained import ChainedFileSystem
 
 __all__ = ("PythonFileSystem",)
 
 
-class PythonFileSystem(AbstractFileSystem):
+class PythonFileSystem(ChainedFileSystem):
     """Python import filesystem"""
 
-    def __init__(self, target_protocol=None, target_options=None, fs=None, **kwargs):
+    protocol: str = "python"
+    root: str = "/"
+
+    def __init__(self, target_protocol=None, target_options=None, fs=None, install: bool = True, **kwargs):
         """
         Args:
             target_protocol: str (optional) Target filesystem protocol. Provide either this or ``fs``.
@@ -29,62 +31,37 @@ class PythonFileSystem(AbstractFileSystem):
         self.target_protocol = (
             target_protocol if isinstance(target_protocol, str) else (fs.protocol if isinstance(fs.protocol, str) else fs.protocol[0])
         )
+
         self.fs = fs if fs is not None else filesystem(target_protocol, **target_options)
+        self.root = kwargs.get("fo", "") or "/"
 
-        if target_protocol and kwargs.get("fo"):
-            install_importer(f"{self.target_protocol}://{kwargs['fo']}", **target_options)
-        else:
-            install_importer(self.fs, **target_options, **kwargs)
+        if install:
+            from .importer import install_importer
 
-    def close(self):
-        uninstall_importer(self.target_protocol)
-        self.fs.close()
-        super().close()
+            install_importer(fs=self, **kwargs)
+
+    def exit(self):
+        from .importer import uninstall_importer
+
+        uninstall_importer(self)
+        if hasattr(self, "fs") and self.fs is not None and hasattr(self.fs, "exit"):
+            self.fs.exit()
 
     def __getattribute__(self, item):
         if item in {
+            "__doc__",
             "__init__",
-            "__getattribute__",
-            "__reduce__",
-            "_make_local_details",
-            "open",
-            "cat",
-            "cat_file",
-            "_cat_file",
-            "cat_ranges",
-            "_cat_ranges",
-            "get",
-            "read_block",
-            "tail",
-            "head",
-            "info",
-            "ls",
-            "exists",
-            "isfile",
-            "isdir",
-            "_check_file",
-            "_check_cache",
-            "_mkcache",
-            "clear_cache",
-            "clear_expired_cache",
-            "pop_from_cache",
-            "local_file",
-            "_paths_from_path",
-            "get_mapper",
-            "open_many",
-            "commit_many",
-            "hash_name",
-            "__hash__",
-            "__eq__",
-            "to_json",
-            "to_dict",
-            "cache_size",
-            "pipe_file",
-            "pipe",
-            "start_transaction",
-            "end_transaction",
+            "__module__",
+            "__new__",
+            "exit",
+            "fs",
+            "protocol",
+            "registered_name",
+            "target_protocol",
         }:
             return object.__getattribute__(self, item)
+
+        # Otherwise pull it out of dict
         d = object.__getattribute__(self, "__dict__")
         fs = d.get("fs", None)  # fs is not immediately defined
         if item in d:
@@ -102,3 +79,6 @@ class PythonFileSystem(AbstractFileSystem):
             return m  # class method or attribute
         # attributes of the superclass, while target is being set up
         return super().__getattribute__(item)
+
+
+register_implementation(PythonFileSystem.protocol, PythonFileSystem)
