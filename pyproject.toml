@@ -26,7 +26,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "fsspec@git+https://github.com/fsspec/filesystem_spec#egg=c23674c4c7bd60f8c3b41d0c4bbcefe4d18d6c70",
+    "fsspec>=2025.12.0",
 ]
 
 [project.entry-points."fsspec.specs"]
@@ -93,10 +93,6 @@ exclude_also = [
 ]
 ignore_errors = true
 fail_under = 50
-
-# TODO remove
-[tool.hatch.metadata]
-allow-direct-references = true
 
 [tool.hatch.build]
 artifacts = []
