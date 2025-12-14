@@ -57,7 +57,7 @@ jobs:
         FSSPEC_S3_ENDPOINT_URL: ${{ secrets.FSSPEC_S3_ENDPOINT_URL }}
 
     - name: Upload test results (Python)
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: test-results-${{ matrix.os }}-${{ matrix.python-version }}
         path: junit.xml
@@ -79,7 +79,7 @@ jobs:
       run: make dist
       if: ${{ matrix.os == 'ubuntu-latest' }}
 
-    - uses: actions/upload-artifact@v5
+    - uses: actions/upload-artifact@v6
       with:
         name: dist-${{matrix.os}}
         path: dist
