@@ -141,14 +141,12 @@ js/node_modules
 js/test-results
 js/playwright-report
 js/*.tgz
-fsspec_python/extension
 
 # Jupyter
 .ipynb_checkpoints
 .autoversion
 Untitled*.ipynb
-!fsspec_python/extension/fsspec_python.json
-!fsspec_python/extension/install.json
+fsspec_python/extension
 fsspec_python/nbextension
 fsspec_python/labextension
 
@@ -158,5 +156,11 @@ fsspec_python/labextension
 # Rust
 target
 
+<<<<<<< before updating
 # Tests
 fsspec_python/tests/dump/out.txt
+=======
+# Hydra
+outputs/
+multirun/
+>>>>>>> after updating
