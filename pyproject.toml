@@ -83,6 +83,7 @@ branch = true
 omit = [
     "fsspec_python/tests/**/*",
 ]
+
 [tool.coverage.report]
 exclude_also = [
     "raise NotImplementedError",
