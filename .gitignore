@@ -142,19 +142,14 @@ fsspec_python/labextension
 # Rust
 target
 
-<<<<<<< before updating
-# Tests
-fsspec_python/tests/dump/out.txt
-=======
 # Hydra
 outputs/
 multirun/
-<<<<<<< before updating
->>>>>>> after updating
-=======
 
 # AI
 ROADMAP.md
 AGENTS.md
 .github/hooks/sdlc.json
->>>>>>> after updating
+
+# Tests
+fsspec_python/tests/dump/out.txt
