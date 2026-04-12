@@ -79,6 +79,14 @@ jobs:
       run: make dist
       if: ${{ matrix.os == 'ubuntu-latest' }}
 
+    - uses: actions-ext/python/test-wheel@main
+      with:
+        module: fsspec_python
+
+    - uses: actions-ext/python/test-sdist@main
+      with:
+        module: fsspec_python
+
     - uses: actions/upload-artifact@v7
       with:
         name: dist-${{matrix.os}}
