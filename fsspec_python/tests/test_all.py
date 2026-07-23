@@ -1,4 +1,4 @@
-from fsspec_python import *  # noqa
+from fsspec_python import *
 
 
 def test_all():

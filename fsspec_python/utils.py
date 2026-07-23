@@ -5,8 +5,8 @@ __all__ = ("normalize_fsspec",)
 
 def normalize_fsspec(
     fs: AbstractFileSystem = None,
-    target_protocol: str = None,
-    target_options: dict = None,
+    target_protocol: str | None = None,
+    target_options: dict | None = None,
     fo: str = "",
     **kwargs,
 ):

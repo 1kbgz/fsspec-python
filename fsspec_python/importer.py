@@ -5,7 +5,7 @@ from importlib.abc import MetaPathFinder, SourceLoader
 from importlib.machinery import SOURCE_SUFFIXES, ModuleSpec
 from os.path import join
 from types import ModuleType
-from typing import TYPE_CHECKING, Dict, Union
+from typing import TYPE_CHECKING
 
 from fsspec import url_to_fs
 from fsspec.implementations.local import AbstractFileSystem
@@ -55,7 +55,7 @@ class FSSpecImportFinder(MetaPathFinder):
 
 
 # Singleton for use elsewhere
-_finders: Dict[str, FSSpecImportFinder] = {}
+_finders: dict[str, FSSpecImportFinder] = {}
 
 
 class FSSpecImportLoader(SourceLoader):
@@ -64,7 +64,7 @@ class FSSpecImportLoader(SourceLoader):
         self.path = path
         self.fs = fs
 
-    def get_filename(self, fullname: str) -> str:  # noqa: ARG002
+    def get_filename(self, fullname: str) -> str:
         return self.path
 
     def get_data(self, path: str | bytes) -> bytes:
@@ -76,18 +76,17 @@ class FSSpecImportLoader(SourceLoader):
     #     source = source_bytes.decode("utf-8")
 
 
-def install_importer(fs: Union[str, AbstractFileSystem], **kwargs: str) -> FSSpecImportFinder:
+def install_importer(fs: str | AbstractFileSystem, **kwargs: str) -> FSSpecImportFinder:
     """Install the fsspec importer."""
     if isinstance(fs, AbstractFileSystem):
         fsspec_str = normalize_fsspec(fs=fs, **kwargs)
     elif not isinstance(fs, str):
-        raise ValueError("fs must be a string or AbstractFileSystem instance")
+        raise TypeError("fs must be a string or AbstractFileSystem instance")
     else:
         fsspec_str = fs
         assert "fo" not in kwargs, "fo cannot be used with string fs"
         fs, kwargs["fo"] = url_to_fs(fsspec_str)
 
-    global _finders
     if fsspec_str not in _finders:
         python_fs = fs if isinstance(fs, PythonFileSystem) else PythonFileSystem(fs=fs, install=False, **kwargs)
 
@@ -97,9 +96,8 @@ def install_importer(fs: Union[str, AbstractFileSystem], **kwargs: str) -> FSSpe
     return _finders[fsspec_str].fs
 
 
-def uninstall_importer(fs: Union[str, AbstractFileSystem] = "") -> None:
+def uninstall_importer(fs: str | AbstractFileSystem = "") -> None:
     """Uninstall the fsspec importer."""
-    global _finders
     if not _finders:
         return
 
