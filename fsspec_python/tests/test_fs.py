@@ -43,7 +43,7 @@ class TestFs:
         assert fs.fs is fs2
         assert fs._cached is True
         assert fs.listdir(".") == fs2.listdir(".")
-        assert set(fs.__dict__.keys()) == {
+        expected = {
             "__doc__",
             "__init__",
             "__module__",
@@ -81,3 +81,6 @@ class TestFs:
             "touch",
             "unstrip_protocol",
         }
+        if hasattr(type(fs2), "_instantiation_lock"):
+            expected.add("_instantiation_lock")
+        assert set(fs.__dict__.keys()) == expected
