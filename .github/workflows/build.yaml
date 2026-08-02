@@ -71,14 +71,17 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@d0a4676d0e0b938bc201470d88276b7c74c712b3  # v2.24.0
         with:
           files: '**/junit.xml'
+        if: ${{ matrix.os == 'ubuntu-latest' }}
 
       - name: Upload coverage
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f  # v7.0.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+        if: ${{ matrix.os == 'ubuntu-latest' }}
 
       - name: Build distributions
         run: make dist
+        if: ${{ matrix.os == 'ubuntu-latest' }}
 
       - name: Test wheel
         uses: actions-ext/python/test-wheel@6e1b91a408ea89f49bc8aff8724f83826f7b5446
@@ -95,3 +98,4 @@ jobs:
         with:
           name: dist-${{matrix.os}}
           path: dist
+        if: ${{ matrix.os == 'ubuntu-latest' }}
