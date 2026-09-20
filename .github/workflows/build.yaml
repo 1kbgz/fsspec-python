@@ -25,15 +25,11 @@ permissions:
 
 jobs:
   build:
-<<<<<<< before updating
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-=======
-    runs-on: ubuntu-24.04
->>>>>>> after updating
+        os: [ubuntu-24.04, macos-26, windows-2025]
 
     steps:
       - name: Checkout
