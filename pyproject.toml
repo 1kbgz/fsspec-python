@@ -43,6 +43,7 @@ develop = [
     "codespell",
     "hatchling",
     "mdformat",
+    "mdformat-frontmatter",
     "mdformat-tables>=1",
     "pytest",
     "pytest-cov",
@@ -80,7 +81,11 @@ replace = 'version = "{new_version}"'
 [tool.coverage.run]
 branch = true
 omit = [
+<<<<<<< before updating
     "fsspec_python/tests/**/*",
+=======
+    "fsspec_python/tests/integration/*",
+>>>>>>> after updating
 ]
 
 [tool.coverage.report]
