@@ -10,7 +10,7 @@ __all__ = ("install_open_hook", "uninstall_open_hook")
 _original_open = builtins.open
 
 # Patch fsspec's local open to avoid recursion
-fsspec.implementations.local.open = _original_open
+vars(fsspec.implementations.local)["open"] = _original_open
 
 
 def install_open_hook(fsspec: str, **fsspec_args):
@@ -24,7 +24,7 @@ def install_open_hook(fsspec: str, **fsspec_args):
             return fsspec_fs.open(filename, mode=mode, encoding=encoding, errors=errors, newline=newline)
         return _original_open(file, mode, buffering, encoding, errors, newline, closefd, opener)
 
-    builtins.open = open_from_fsspec
+    vars(builtins)["open"] = open_from_fsspec
     globals()["open"] = open_from_fsspec
 
 

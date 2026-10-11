@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+from typing import ClassVar
 
 from fsspec import filesystem, register_implementation
 from fsspec.implementations.chained import ChainedFileSystem
@@ -11,7 +12,7 @@ __all__ = ("PythonFileSystem",)
 class PythonFileSystem(ChainedFileSystem):
     """Python import filesystem"""
 
-    protocol: str = "python"
+    protocol: ClassVar[str] = "python"
     root: str = "/"
 
     def __init__(self, target_protocol=None, target_options=None, fs=None, install: bool = True, **kwargs):
@@ -29,11 +30,11 @@ class PythonFileSystem(ChainedFileSystem):
             raise ValueError("Both filesystems (fs) and target_protocol may not be both given.")
 
         target_options = target_options or {}
+        self.fs = fs if fs is not None else filesystem(target_protocol, **target_options)
         self.target_protocol = (
-            target_protocol if isinstance(target_protocol, str) else (fs.protocol if isinstance(fs.protocol, str) else fs.protocol[0])
+            target_protocol if isinstance(target_protocol, str) else (self.fs.protocol if isinstance(self.fs.protocol, str) else self.fs.protocol[0])
         )
 
-        self.fs = fs if fs is not None else filesystem(target_protocol, **target_options)
         if isinstance(self.fs, ChainedFileSystem):
             self.root = "/"
             kwargs.pop("fo", None)

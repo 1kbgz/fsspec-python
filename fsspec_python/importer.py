@@ -5,7 +5,7 @@ from importlib.abc import MetaPathFinder, SourceLoader
 from importlib.machinery import SOURCE_SUFFIXES, ModuleSpec
 from os.path import join
 from types import ModuleType
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from fsspec import url_to_fs
 from fsspec.implementations.local import AbstractFileSystem
@@ -28,7 +28,7 @@ __all__ = (
 class FSSpecImportFinder(MetaPathFinder):
     def __init__(self, fs: PythonFileSystem) -> None:
         self.fs: PythonFileSystem = fs
-        self.remote_modules: dict[str, str] = {}
+        self.remote_modules: dict[str, ModuleSpec] = {}
 
     def find_spec(self, fullname: str, path: Sequence[str | bytes] | None, target: ModuleType | None = None) -> ModuleSpec | None:
         for suffix in SOURCE_SUFFIXES:
@@ -76,7 +76,7 @@ class FSSpecImportLoader(SourceLoader):
     #     source = source_bytes.decode("utf-8")
 
 
-def install_importer(fs: str | AbstractFileSystem, **kwargs: str) -> FSSpecImportFinder:
+def install_importer(fs: str | AbstractFileSystem, **kwargs: Any) -> PythonFileSystem:
     """Install the fsspec importer."""
     if isinstance(fs, AbstractFileSystem):
         fsspec_str = normalize_fsspec(fs=fs, **kwargs)
@@ -106,9 +106,8 @@ def uninstall_importer(fs: str | AbstractFileSystem = "") -> None:
     fsspec_str = normalize_fsspec(fs=fs) if isinstance(fs, AbstractFileSystem) else fs
 
     if fsspec_str in _finders:
-        finder = _finders.pop(fsspec_str, None)
-        if finder:
-            finder.unload()
+        finder = _finders.pop(fsspec_str)
+        finder.unload()
         if finder in sys.meta_path:
             sys.meta_path.remove(finder)
         return

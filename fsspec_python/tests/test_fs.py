@@ -5,7 +5,7 @@ from fsspec_python.fs import PythonFileSystem
 
 class TestFs:
     def test_fs_import(self, fs_importer):
-        import my_local_file2
+        import my_local_file2  # ty: ignore[unresolved-import]  # Module provided by the filesystem import fixture.
 
         assert my_local_file2.baz() == "This is a local file."
 
