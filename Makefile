@@ -25,16 +25,16 @@ lint-py:  ## lint python with ruff
 	python -m ruff format --check fsspec_python
 
 lint-docs:  ## lint docs with mdformat and codespell
-	python -m mdformat --check README.md $(wildcard docs/src) 
-	python -m codespell_lib README.md $(wildcard docs/src) 
+	python -m mdformat --check README.md docs/*.md
+	python -m codespell_lib --ignore-words-list fo README.md docs/*.md
 
 fix-py:  ## autoformat python code with ruff
 	python -m ruff check --fix fsspec_python
 	python -m ruff format fsspec_python
 
 fix-docs:  ## autoformat docs with mdformat and codespell
-	python -m mdformat README.md $(wildcard docs/src) 
-	python -m codespell_lib --write README.md $(wildcard docs/src) 
+	python -m mdformat README.md docs/*.md
+	python -m codespell_lib --ignore-words-list fo --write README.md docs/*.md
 
 lint: lint-py lint-docs  ## run all linters
 lints: lint
