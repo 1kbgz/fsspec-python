@@ -145,3 +145,15 @@ section-order = [
     "F401",
     "F403",
 ]
+
+[tool.yardang]
+title = "fsspec-python"
+root = "README.md"
+pages = [
+    "docs/tutorial.md",
+    "docs/how-to-import.md",
+    "docs/how-to-open.md",
+    "docs/reference.md",
+    "docs/explanation.md",
+]
+use-autoapi = false
