@@ -50,7 +50,11 @@ check-dist:  ## check python sdist and wheel with check-dist
 	check-dist -v
 
 check-types:  ## check python types with ty
+<<<<<<< before updating
 	ty check --python "$$(python -c 'import sys; print(sys.executable)')"
+=======
+	python -m ty check
+>>>>>>> after updating
 
 checks: check-dist check-types
 
